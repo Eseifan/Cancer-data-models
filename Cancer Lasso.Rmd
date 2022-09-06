@@ -44,7 +44,7 @@ M6$beta
 
 ```{r}
 
-#Ok let's try this:
+#Ok let's try this: hello???
 
 M_final = lm (target_deathrate ~  incidencerate + povertypercent+ medianagemale+ pcths18_24 + pcths25_over + pctbachdeg25_over  + pctunemployed16_over+ pctprivatecoverage + pctpubliccoveragealone  + pctotherrace + pctmarriedhouseholds + birthrate, data= Cancer_m2)
 summary (M_final)
