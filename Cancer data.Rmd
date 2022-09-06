@@ -140,11 +140,6 @@ summary (M_step)
 
 %>% 
 ```{r}
-library(leaps)
-Le= leaps (Cancer_m2 [,-3], Cancer_m2 [,3], method= 'adjr2', nbest=1)
-Le
-a = which (Le$adjr2 == max (Le$adjr2))
-a
 
 ```
 
