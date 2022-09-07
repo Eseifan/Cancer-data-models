@@ -21,14 +21,10 @@ library ('glmnet')
 
 
 ```{r}
-Cancer <- read.csv('/Users/hazemeseifan/ASML/cancer_reg.csv')
-
-Cancer =  Cancer [-c (1000,2374),-c(9, 13, 17,24)]
-Cancer <-Cancer [!(Cancer$avganncount > 1962 & Cancer$avganncount < 1963),]
-Cancer_m  =  na.omit(Cancer)
 Cancer_m
-
 ```
+
+
 
 
 
@@ -49,8 +45,29 @@ M6$beta
 
 ```{r}
 
+M_final = lm (target_deathrate ~  
+avganncount 
++ incidencerate        
++ povertypercent          
++ medianagemale          
++ medianagefemale        
++ percentmarried          
++pctnohs18_24           
++pcths18_24              
++pcths25_over            
++pctbachdeg25_over      
++pctemployed16_over     
++pctunemployed16_over    
++pctprivatecoverage     
++pctempprivcoverage      
++pctpubliccoveragealone  
++pctwhite               
++pctblack                
++pctotherrace           
++pctmarriedhouseholds   
++birthrate,
+data= Cancer_m)
 
-M_final = lm (target_deathrate ~  avganncount+ incidencerate + povertypercent+ medianagemale+ medianagefemale + percentmarried+ pctnohs18_24+ pcths18_24 + pcths25_over + pctbachdeg25_over  + pctemployed16_over + pctunemployed16_over+ pctprivatecoverage + pctempprivcoverage+ pctpubliccoveragealone  + pctwhite + pctblack + pctotherrace + pctmarriedhouseholds + birthrate, data= Cancer_m)
 summary (M_final)
 ```
 

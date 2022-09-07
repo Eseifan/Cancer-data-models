@@ -19,6 +19,10 @@ library("dplyr")
 library(MASS)
 library ('glmnet')
 
+
+library(tidyverse)
+
+library(lubridate)
 ```
 
 
@@ -36,50 +40,53 @@ Cancer
 ```{r}
 summary (Cancer)
 ```
-
-
 ```{r}
-Cancer =  na.omit(Cancer [-c (1000,2374),-c(9, 13, 17,24)])
-Cancer
-```
-```{r}
-
-plot (Cancer_m1 [, c(1,2,3) ])
-
-```
-
-```{r}
-plot ((Cancer[Cancer$avganncount < 1980 & Cancer$avganncount > 1950,])[,c (1,2,3)])
+plot (Cancer [, c(1,2,3, 4, 5, 6, 7, 8, 9, 10, 11,12 ,13, 14, 15) ])
 ```
 
 
+
 ```{r}
-Cancer[Cancer$avganncount < 1963 & Cancer$avganncount > 1962,]
-```
-```{r}
-Cancer <-Cancer [!(Cancer$avganncount > 1962 & Cancer$avganncount < 1963),]
-Cancer
+Cancer [(Cancer$avganncount > 20000),]
+Cancer1 = Cancer [-c (1000,2374),]
+Cancer1 
+Cancer1 [(Cancer1$avganncount > 20000),]
+
+
+
 ```
 
 
 
 
 
-
 ```{r}
-Cancer_1 <- Cancer  [, c(1,4,6)]
-
-Cancer_1$avc = Cancer_1$incidencerate*(Cancer_1$popest2015/100000)
- 
-
-plot (Cancer_1)
+Cancer1 [Cancer1$medianage >100,]
+Cancer1 <-Cancer1 [!(Cancer1$medianage > 100),]
+Cancer1 
 ```
-```{r}
 
-Cancer_m =  na.omit(Cancer [,-c(9, 13, 17,24)])
+
+
+
+```{r}
+Cancer1[Cancer1$avganncount < 1963 & Cancer1$avganncount > 1962,]
+Cancer2 <-Cancer1 [!(Cancer1$avganncount > 1962 & Cancer1$avganncount < 1963),]
+Cancer2 
+```
+
+
+
+
+
+```{r}
+Cancer_m=  na.omit (Cancer2 [,-c(9, 13, 17,24)])
+
 Cancer_m
-
 ```
+
+
+
 
 
 ```{r}
@@ -131,8 +138,11 @@ The preview shows you a rendered HTML copy of the contents of the editor. Conseq
 
 ```{r}
 M3 = lm (target_deathrate ~ avganncount + avgdeathsperyear + incidencerate + 
-    popest2015 + povertypercent + pcths18_24 + pcths25_over + 
-    pctunemployed16_over + pctasian + pctotherrace + birthrate, data = Cancer_m)
+    medincome + povertypercent + medianagemale + percentmarried + 
+    pctnohs18_24 + pcths18_24 + pcths25_over + pctbachdeg25_over + 
+    pctemployed16_over + pctprivatecoverage + pctempprivcoverage + 
+    pctwhite + pctasian + pctotherrace + pctmarriedhouseholds + 
+    birthrate, data = Cancer_m)
 summary (M3)
 ```
 
@@ -158,8 +168,11 @@ StepF_M = stepAIC (M1,test = 'F',  direction = 'both')
 
 ```{r}
 M_stepF = lm (target_deathrate ~ avganncount + avgdeathsperyear + incidencerate + 
-    popest2015 + povertypercent + pcths18_24 + pcths25_over + 
-    pctunemployed16_over + pctasian + pctotherrace + birthrate, data = Cancer_m)
+    medincome + povertypercent + medianagemale + percentmarried + 
+    pctnohs18_24 + pcths18_24 + pcths25_over + pctbachdeg25_over + 
+    pctemployed16_over + pctprivatecoverage + pctempprivcoverage + 
+    pctwhite + pctasian + pctotherrace + pctmarriedhouseholds + 
+    birthrate, data = Cancer_m)
 
 summary (M_stepF)
 ```
