@@ -23,9 +23,10 @@ library ('glmnet')
 ```{r}
 Cancer <- read.csv('/Users/hazemeseifan/ASML/cancer_reg.csv')
 
-Cancer_m2= na.omit (Cancer [, -c(9, 13, 17,24)])
-Cancer_m2
-
+Cancer =  Cancer [-c (1000,2374),-c(9, 13, 17,24)]
+Cancer <-Cancer [!(Cancer$avganncount > 1962 & Cancer$avganncount < 1963),]
+Cancer_m  =  na.omit(Cancer)
+Cancer_m
 
 ```
 
@@ -35,11 +36,11 @@ Cancer_m2
 ```{r}
 
 
-CV_lambda = cv.glmnet(x=as.matrix(Cancer_m2[,-3]), y = Cancer_m2 [,3], alpha= 1)
+CV_lambda = cv.glmnet(x=as.matrix(Cancer_m[,-3]), y = Cancer_m [,3], alpha= 1)
 CV_lambda
 best_lambda = CV_lambda$lambda.1se
 
-M6 = glmnet(Cancer_m2 [,-3], Cancer_m2 [,3], alpha = 1, lambda = best_lambda)
+M6 = glmnet(Cancer_m [,-3], Cancer_m [,3], alpha = 1, lambda = best_lambda)
 M6$beta
 #We git min (the lowest lambda), and the 1-standard error (1se)-rule lambda.  Nonezero is the number of non-zero coifficients
 ```
@@ -49,30 +50,18 @@ M6$beta
 ```{r}
 
 
-M_final = lm (target_deathrate ~  incidencerate + povertypercent+ medianagemale+ pcths18_24 + pcths25_over + pctbachdeg25_over  + pctunemployed16_over+ pctprivatecoverage + pctpubliccoveragealone  + pctotherrace + pctmarriedhouseholds + birthrate, data= Cancer_m2)
+M_final = lm (target_deathrate ~  avganncount+ incidencerate + povertypercent+ medianagemale+ medianagefemale + percentmarried+ pctnohs18_24+ pcths18_24 + pcths25_over + pctbachdeg25_over  + pctemployed16_over + pctunemployed16_over+ pctprivatecoverage + pctempprivcoverage+ pctpubliccoveragealone  + pctwhite + pctblack + pctotherrace + pctmarriedhouseholds + birthrate, data= Cancer_m)
 summary (M_final)
 ```
 
 
-```{r}
-plot (CV$cvm)
-
-plot (CV$cvm, ylim = c (381,383))
-
-```
 
 
-```{r}
-#Build the model with the min lambda but it is not a correct model)
-M6 = glmnet(Cancer_m2 [,-3], Cancer_m2 [,3], alpha = 1, lambda = 0.0377)
-M6$beta
-```
 
 
-```{r}
-L = glmnet(Cancer_m2 [,-2], Cancer_m2 [,2], alpha = 1)
-dim(L$beta)
-```
+
+
+
 
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.

@@ -39,13 +39,51 @@ summary (Cancer)
 
 
 ```{r}
-Cancer_m1 =  na.omit(Cancer [,-c(9, 13, 17,24)])
-Cancer_m1
+Cancer =  na.omit(Cancer [-c (1000,2374),-c(9, 13, 17,24)])
+Cancer
+```
+```{r}
+
+plot (Cancer_m1 [, c(1,2,3) ])
+
+```
+
+```{r}
+plot ((Cancer[Cancer$avganncount < 1980 & Cancer$avganncount > 1950,])[,c (1,2,3)])
 ```
 
 
 ```{r}
-M1 = lm (target_deathrate ~., data= Cancer_m1)
+Cancer[Cancer$avganncount < 1963 & Cancer$avganncount > 1962,]
+```
+```{r}
+Cancer <-Cancer [!(Cancer$avganncount > 1962 & Cancer$avganncount < 1963),]
+Cancer
+```
+
+
+
+
+
+
+```{r}
+Cancer_1 <- Cancer  [, c(1,4,6)]
+
+Cancer_1$avc = Cancer_1$incidencerate*(Cancer_1$popest2015/100000)
+ 
+
+plot (Cancer_1)
+```
+```{r}
+
+Cancer_m =  na.omit(Cancer [,-c(9, 13, 17,24)])
+Cancer_m
+
+```
+
+
+```{r}
+M1 = lm (target_deathrate ~., data= Cancer_m)
 summary (M1)
 ```
 
@@ -53,21 +91,13 @@ summary (M1)
 plot (M1)
 ```
 
-```{r}
-Cancer_m2= na.omit (Cancer [, -c(9, 13, 17,24)])
-
-Cancer_m2
-```
 
 
 
 
 
-```{r}
-M2= lm (target_deathrate ~., data= Cancer_m2)
-summary (M2)
-plot (M2)
-```
+
+
 
 
 ```{r}
@@ -76,9 +106,12 @@ Rsc = rstudent(M1)
 Rst =rstandard(M1)
 plot (M1$fitted.values, Rs)
 ```
+
+
+
 ```{r}
 ks.test (Rst, 'pnorm')
-ks.test (Rsc, 'pt', nrow (Cancer_m2)-ncol(Cancer_m2))
+ks.test (Rsc, 'pt', nrow (Cancer_m)-ncol(Cancer_m))
 
 ```
 Noise is not Gaussian, we cannot use the Fisher criterion
@@ -98,62 +131,39 @@ The preview shows you a rendered HTML copy of the contents of the editor. Conseq
 
 ```{r}
 M3 = lm (target_deathrate ~ avganncount + avgdeathsperyear + incidencerate + 
-    popest2015 + medianagemale + percentmarried + pctnohs18_24 + 
-    pcths18_24 + pcths25_over + pctbachdeg25_over + pctemployed16_over + 
-    pctprivatecoverage + pctempprivcoverage + pctpubliccoverage + 
-    pctpubliccoveragealone + pctwhite + pctotherrace + pctmarriedhouseholds + 
-    birthrate, data = Cancer_m1)
+    popest2015 + povertypercent + pcths18_24 + pcths25_over + 
+    pctunemployed16_over + pctasian + pctotherrace + birthrate, data = Cancer_m)
 summary (M3)
 ```
 
 
 
-```{r}
-M3 = lm (target_deathrate ~ avganncount + avgdeathsperyear + incidencerate + 
-    popest2015 + medianagemale + medianagefemale + percentmarried + 
-    pctnohs18_24 + pcths18_24 + pcths25_over + pctbachdeg25_over + 
-    pctemployed16_over + pctprivatecoverage + pctempprivcoverage + 
-    pctpubliccoverage + pctpubliccoveragealone + pctwhite + pctotherrace + 
-    pctmarriedhouseholds + birthrate, data= Cancer_m2)
-summary (M3)
-```
 
 
 ```{r}
 plot (M3)
 ```
-```{r}
-Rs = rstudent(M3)
-Rst =rstandard(M3)
-plot (M3$fitted.values, Rs)
-```
 
-```{r}
-ks.test (Rst, 'pnorm')
-```
+
+
+
 
 
 ```{r}
-M4= stepAIC (M2, direction= 'both')
+StepF_M = stepAIC (M1,test = 'F',  direction = 'both')
 
 
 ```
 
 
 ```{r}
-M_step = lm (target_deathrate ~ avganncount + avgdeathsperyear + incidencerate + 
-    popest2015 + medianagemale + percentmarried + pctnohs18_24 + 
-    pcths18_24 + pcths25_over + pctbachdeg25_over + pctemployed16_over + 
-    pctprivatecoverage + pctempprivcoverage + pctpubliccoverage + 
-    pctpubliccoveragealone + pctwhite + pctotherrace + pctmarriedhouseholds + 
-    birthrate, data = Cancer_m2)
+M_stepF = lm (target_deathrate ~ avganncount + avgdeathsperyear + incidencerate + 
+    popest2015 + povertypercent + pcths18_24 + pcths25_over + 
+    pctunemployed16_over + pctasian + pctotherrace + birthrate, data = Cancer_m)
 
-summary (M_step)
+summary (M_stepF)
 ```
 
 
-%>% 
-```{r}
 
-```
 
