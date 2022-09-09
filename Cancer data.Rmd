@@ -33,6 +33,18 @@ Cancer
 ```
 
 
+```{r}
+#Split binnedinc column into two and turn into decimal
+Cancer1 = Cancer %>%
+  separate(binnedinc, c("binned1", "binned2"), ",")
+Cancer1 = Cancer1 %>%
+  mutate(binned1 = str_replace_all(binned1, "\\*|\\(|\\)", ""))
+Cancer1 = Cancer1 %>%
+  mutate(binned2 = str_replace_all(binned2, "\\*|\\(|\\)|\\[|\\]", ""))
+Cancer1 = transform (Cancer1, binned1 = as.numeric(binned1))
+Cancer1 = transform (Cancer1, binned2 = as.numeric(binned2))
+Cancer1
+```
 
 
 
