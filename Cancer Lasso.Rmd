@@ -49,14 +49,12 @@ M_final = lm (target_deathrate ~
 avganncount         +
 avgdeathsperyear    +
 incidencerate       +
-medincome           +
-studypercap         +
+povertypercent      +
 medianagemale       +
 medianagefemale     +
 percentmarried      +
 pctnohs18_24        +
 pcths18_24          +
-pctbachdeg18_24     +
 pcths25_over        +
 pctbachdeg25_over   +
 pctemployed16_over  +
@@ -66,11 +64,9 @@ pctempprivcoverage  +
 pctpubliccoveragealone +
 pctwhite               +
 pctblack               +
-pctasian               +
 pctotherrace           +
 pctmarriedhouseholds   +
-birthrate              +
-binndc                 ,
+birthrate              ,
 data= Cancer_m)
 
 summary (M_final)
