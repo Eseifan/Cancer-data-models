@@ -49,9 +49,7 @@ Cancer1 = transform (Cancer1, binned2 = as.numeric(binned2))
 
 
 
-```{r}
-summary (Cancer1)
-```
+
 
 
 ```{r}
@@ -62,9 +60,9 @@ plot (Cancer1 [, c(1,2,3, 4, 5, 6, 7,  9, 10, 11,12 ,13, 14, 15) ])
 
 ```{r}
 Cancer1 [(Cancer1$avganncount > 20000),]
-Cancer2 = Cancer1 [-c (1000,2374),]
-Cancer2
-Cancer2 [(Cancer2$avganncount > 20000),]
+Cancer_m1 = Cancer1 [-c (1000,2374),]
+Cancer_m1
+Cancer [(Cancer2$avganncount > 20000),]
 
 
 
@@ -201,11 +199,10 @@ StepF_M = stepAIC (M1,test = 'F',  direction = 'both')
 
 ```{r}
 M_stepF = lm (target_deathrate ~ avganncount + avgdeathsperyear + incidencerate + 
-    medincome + popest2015 + povertypercent + binned1 + binned2 + 
-    medianagemale + percentmarried + pctnohs18_24 + pcths18_24 + 
-    pcths25_over + pctbachdeg25_over + pctemployed16_over + pctprivatecoverage + 
-    pctempprivcoverage + pctwhite + pctotherrace + pctmarriedhouseholds + 
-    birthrate, data = Cancer_m)
+    popest2015 + medianagemale + percentmarried + pctnohs18_24 + 
+    pcths18_24 + pcths25_over + pctbachdeg25_over + pctemployed16_over + 
+    pctprivatecoverage + pctempprivcoverage + pctwhite + pctotherrace + 
+    pctmarriedhouseholds + birthrate + binndc, data = Cancer_m)
 
 summary (M_stepF)
 ```
