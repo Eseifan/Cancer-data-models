@@ -43,24 +43,25 @@ M6$beta
 
 
 
+
 ```{r}
 
 M_final = lm (target_deathrate ~  
-avganncount         +
-avgdeathsperyear    +
-incidencerate       +
-povertypercent      +
-medianagemale       +
-medianagefemale     +
-percentmarried      +
-pctnohs18_24        +
-pcths18_24          +
-pcths25_over        +
-pctbachdeg25_over   +
-pctemployed16_over  +
-pctunemployed16_over+
-pctprivatecoverage  +
-pctempprivcoverage  +
+avganncount            +
+avgdeathsperyear       +
+incidencerate          +
+povertypercent         +
+medianagemale          +
+medianagefemale        +
+percentmarried         +
+pctnohs18_24           +
+pcths18_24             +
+pcths25_over           +
+pctbachdeg25_over      +
+pctemployed16_over     +
+pctunemployed16_over   +
+pctprivatecoverage     +
+pctempprivcoverage     +
 pctpubliccoveragealone +
 pctwhite               +
 pctblack               +
