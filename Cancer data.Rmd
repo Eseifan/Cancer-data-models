@@ -34,6 +34,8 @@ Cancer
 
 
 ```{r}
+
+#What can be done with binned?
 #Split binnedinc column into two and turn into decimal
 Cancer1 = Cancer %>%
   separate(binnedinc, c("binned1", "binned2"), ",")
