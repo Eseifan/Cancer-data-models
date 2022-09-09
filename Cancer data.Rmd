@@ -33,26 +33,6 @@ Cancer
 ```
 
 
-```{r}
-
-#What can be done with binned?
-#Split binnedinc column into two and turn into decimal
-Cancer1 = Cancer %>%
-  separate(binnedinc, c("binned1", "binned2"), ",")
-Cancer1 = Cancer1 %>%
-  mutate(binned1 = str_replace_all(binned1, "\\*|\\(|\\)", ""))
-Cancer1 = Cancer1 %>%
-  mutate(binned2 = str_replace_all(binned2, "\\*|\\(|\\)|\\[|\\]", ""))
-Cancer1 = transform (Cancer1, binned1 = as.numeric(binned1))
-Cancer1 = transform (Cancer1, binned2 = as.numeric(binned2))
-Cancer1
-```
-
-
-
-
-
-
 
 
 
@@ -71,19 +51,13 @@ Cancer [(Cancer2$avganncount > 20000),]
 
 
 ```
-```{r}
-summary (Cancer2)
-```
-
-
-
-
-
 
 
 ```{r}
 summary (Cancer2)
 ```
+
+
 
 
 
@@ -100,11 +74,6 @@ Cancer2
 Cancer2[Cancer2$avganncount < 1963 & Cancer2$avganncount > 1962,]
 Cancer2 <-Cancer2 [!(Cancer2$avganncount > 1962 & Cancer2$avganncount < 1963),]
 Cancer2 
-```
-
-
-```{r}
-summary (Cancer2)
 ```
 
 
