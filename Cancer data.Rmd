@@ -18,8 +18,9 @@ install.packages("glmnet")
 library("dplyr")
 library(MASS)
 library ('glmnet')
+library(leaps)
 
-
+library (tidyr)
 library(tidyverse)
 
 library(lubridate)
@@ -30,30 +31,46 @@ library(lubridate)
 Cancer <- read.csv('/Users/hazemeseifan/ASML/cancer_reg.csv')
 Cancer
 ```
-
-
-
-
-
-
-
 ```{r}
-summary (Cancer)
-```
-```{r}
-plot (Cancer [, c(1,2,3, 4, 5, 6, 7, 8, 9, 10, 11,12 ,13, 14, 15) ])
+#Split binnedinc column into two and turn into decimal
+Cancer1 = Cancer %>%
+  separate(binnedinc, c("binned1", "binned2"), ",")
+Cancer1 = Cancer1 %>%
+  mutate(binned1 = str_replace_all(binned1, "\\*|\\(|\\)", ""))
+Cancer1 = Cancer1 %>%
+  mutate(binned2 = str_replace_all(binned2, "\\*|\\(|\\)|\\[|\\]", ""))
+Cancer1 = transform (Cancer1, binned1 = as.numeric(binned1))
+Cancer1 = transform (Cancer1, binned2 = as.numeric(binned2))
 ```
 
 
 
+
+
+
+
 ```{r}
-Cancer [(Cancer$avganncount > 20000),]
-Cancer1 = Cancer [-c (1000,2374),]
-Cancer1 
+summary (Cancer1)
+```
+
+
+```{r}
+plot (Cancer1 [, c(1,2,3, 4, 5, 6, 7,  9, 10, 11,12 ,13, 14, 15) ])
+```
+
+
+
+```{r}
 Cancer1 [(Cancer1$avganncount > 20000),]
+Cancer2 = Cancer1 [-c (1000,2374),]
+Cancer2
+Cancer2 [(Cancer2$avganncount > 20000),]
 
 
 
+```
+```{r}
+summary (Cancer2)
 ```
 
 
@@ -61,27 +78,44 @@ Cancer1 [(Cancer1$avganncount > 20000),]
 
 
 ```{r}
-Cancer1 [Cancer1$medianage >100,]
-Cancer1 <-Cancer1 [!(Cancer1$medianage > 100),]
-Cancer1 
+Cancer2 [Cancer2$binned2 >120000,]
+Cancer2 <-Cancer2 [!(Cancer2$binned2 > 120000),]
+Cancer2
+```
+
+```{r}
+summary (Cancer2)
 ```
 
 
 
 
 ```{r}
-Cancer1[Cancer1$avganncount < 1963 & Cancer1$avganncount > 1962,]
-Cancer2 <-Cancer1 [!(Cancer1$avganncount > 1962 & Cancer1$avganncount < 1963),]
+Cancer2 <-Cancer2 [!(Cancer2$medianage > 100),]
+Cancer2
+```
+
+
+
+
+```{r}
+Cancer2[Cancer2$avganncount < 1963 & Cancer2$avganncount > 1962,]
+Cancer2 <-Cancer2 [!(Cancer2$avganncount > 1962 & Cancer2$avganncount < 1963),]
 Cancer2 
 ```
 
 
+```{r}
+summary (Cancer2)
+```
 
 
 
 ```{r}
-Cancer_m=  na.omit (Cancer2 [,-c(9, 13, 17,24)])
+Cancer_m=  na.omit (Cancer2 [,-c( 14, 18,25)])
 
+Cancer_m$binndc = Cancer_m$binned2-Cancer_m$binned1
+Cancer_m = Cancer_m [, -c (9,10)]
 Cancer_m
 ```
 
@@ -138,11 +172,10 @@ The preview shows you a rendered HTML copy of the contents of the editor. Conseq
 
 ```{r}
 M3 = lm (target_deathrate ~ avganncount + avgdeathsperyear + incidencerate + 
-    medincome + povertypercent + medianagemale + percentmarried + 
-    pctnohs18_24 + pcths18_24 + pcths25_over + pctbachdeg25_over + 
-    pctemployed16_over + pctprivatecoverage + pctempprivcoverage + 
-    pctwhite + pctasian + pctotherrace + pctmarriedhouseholds + 
-    birthrate, data = Cancer_m)
+    popest2015 + medianagemale + percentmarried + pctnohs18_24 + 
+    pcths18_24 + pcths25_over + pctbachdeg25_over + pctemployed16_over + 
+    pctprivatecoverage + pctempprivcoverage + pctwhite + pctotherrace + 
+    pctmarriedhouseholds + birthrate + binndc, data = Cancer_m)
 summary (M3)
 ```
 
@@ -168,15 +201,28 @@ StepF_M = stepAIC (M1,test = 'F',  direction = 'both')
 
 ```{r}
 M_stepF = lm (target_deathrate ~ avganncount + avgdeathsperyear + incidencerate + 
-    medincome + povertypercent + medianagemale + percentmarried + 
-    pctnohs18_24 + pcths18_24 + pcths25_over + pctbachdeg25_over + 
-    pctemployed16_over + pctprivatecoverage + pctempprivcoverage + 
-    pctwhite + pctasian + pctotherrace + pctmarriedhouseholds + 
+    medincome + popest2015 + povertypercent + binned1 + binned2 + 
+    medianagemale + percentmarried + pctnohs18_24 + pcths18_24 + 
+    pcths25_over + pctbachdeg25_over + pctemployed16_over + pctprivatecoverage + 
+    pctempprivcoverage + pctwhite + pctotherrace + pctmarriedhouseholds + 
     birthrate, data = Cancer_m)
 
 summary (M_stepF)
 ```
 
 
+```{r}
+MR2 = leaps (Cancer_m [,-3], Cancer_m [,3], nbest=1, method = 'adjr2')
+MR2
+```
+
+```{r}
+a = which (MR2$adjr2 == max (MR2$adjr2))
+a
+```
+
+```{r}
+plot (MR2$size, MR2$adjr2)
+```
 
 
