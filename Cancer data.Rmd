@@ -32,7 +32,17 @@ Cancer <- read.csv('/Users/hazemeseifan/ASML/cancer_reg.csv')
 Cancer
 ```
 
+```{r}
+plot (Cancer [, c(4,1)])
+```
+```{r}
+summary (Cancer)
+```
 
+
+```{r}
+Cancer[(Cancer$incidencerate >800),c (1, 4, 6)]
+```
 
 
 
@@ -58,6 +68,9 @@ summary (Cancer2)
 ```
 
 
+```{r}
+Cancer [(Cancer$medianage >100), c (10, 11, 12, 13)]
+```
 
 
 
@@ -71,7 +84,7 @@ Cancer2
 
 
 ```{r}
-Cancer2[Cancer2$avganncount < 1963 & Cancer2$avganncount > 1962,]
+Cancer[Cancer$avganncount < 1963 & Cancer$avganncount > 1962,]
 Cancer2 <-Cancer2 [!(Cancer2$avganncount > 1962 & Cancer2$avganncount < 1963),]
 Cancer2 
 ```
