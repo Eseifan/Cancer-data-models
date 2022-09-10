@@ -9,6 +9,15 @@ Try executing this chunk by clicking the *Run* button within the chunk or by pla
 
 ```{r}
 library (rpart)
+library("dplyr")
+library(MASS)
+library ('glmnet')
+library(leaps)
+
+library (tidyr)
+library(tidyverse)
+
+library(lubridate)
 ```
 
 
@@ -88,6 +97,7 @@ T12=prune (Tr,cp=C[13,1])
 plot (T10)
 text (T10)
 ```
+
 ```{r}
 plot (T11)
 text (T11)
@@ -98,5 +108,168 @@ plotcp (Tr)
 ```{r}
 Trb = rpart (mpg~., data = cars)
 summary (Trb)
+
+#Surrogate splits are used to place data points with missing values.
+```
+
+
+```{r}
+data ("airquality")
+A = airquality
+a=A$Ozone
+b=is.na(a)
+s=which (b=="TRUE" )
+
+B=A[-s,]
+V= A [s,]
+```
+
+```{r}
+summary (B)
+```
+
+```{r}
+TBmax = rpart (Ozone~., data = B, control = rpart.control(minsplit = 2, cp = 10^(-15)))
+TBmax
+```
+
+```{r}
+PBmax=predict (TBmax)
+err2=sum ( (PBmax-B$Ozone) ^2)
+err2
+```
+
+
+
+```{r}
+Cancer <- read.csv('/Users/hazemeseifan/ASML/cancer_reg.csv')
+summary (Cancer)
+n_distinct(Cancer$geography)
+
+```
+
+```{r}
+Cancer1 = Cancer %>%
+  separate(geography, c("county", "state"), ",")
+Cancer1
+```
+```{r}
+n_distinct(Cancer1$state)
+n_distinct(Cancer1$county)
+```
+
+
+```{r}
+Cancer1 [(Cancer1$medianage > 100),]
+Cancer2 <-Cancer1 [!(Cancer1$medianage > 100),]
+Cancer2
+```
+
+
+
+```{r}
+Cancer3 <-Cancer2 [!(Cancer2$avganncount > 1962 & Cancer2$avganncount < 1963),]
+Cancer3
+```
+
+
+
+
+```{r}
+summary (Cancer3) 
+
+```
+
+
+
+```{r}
+#Cancer4 = Cancer3 [, -c(13, 17, 24)]
+Cancer4 = Cancer3 [, -c(13, 18, 25)]
+
+Cancer4
+```
+```{r}
+
+u = 1:nrow (Cancer4)
+m= floor (2/3*nrow (Cancer4))
+v =sample (u,m)
+Cancer_m = Cancer4 [v,]
+Cancer_t = Cancer4 [-v,]
+```
+
+
+```{r}
+Cancer_m
+Cancer_t
+```
+
+
+
+```{r}
+Tmax = rpart (target_deathrate~., data = Cancer_m, control = rpart.control(minsplit = 2, cp = 10^(-200)))
+
+```
+
+
+```{r}
+plotcp (Tmax)
+```
+
+
+
+
+
+```{r}
+Pmax=predict (Tmax)
+err2=sum ( (Pmax-Cancer_m$target_deathrate) ^2)/length(Pmax)
+err2
+```
+
+```{r}
+#Smallest cross-validation error:
+CP = Tmax$cptable
+cvmin = min (CP [,4])
+cvmin
+r= which (CP[, 4]==cvmin)
+t= CP [r, 4]+CP [r, 5] #the 1se rule threshold
+Z = which (CP [,4]<= t) #CP values below the threshold
+Z
+ZS = Z [1] #Pick the first one
+ZS
+
+```
+
+```{r}
+#Use the CP value we picked to create a pruned tree
+Tfinal = prune (Tmax, cp= CP [ZS,1])
+Tfinal
+```
+
+```{r}
+plot (Tfinal)
+```
+
+
+```{r}
+plotcp (Tmax)
+
+```
+
+
+
+
+```{r}
+Pfinal = predict (Tfinal, newdata = Cancer_t)
+```
+
+
+
+```{r}
+err_f = sqrt (sum ( (Pfinal-Cancer_t$target_deathrate) ^2)/length (Pfinal))
+err_f
+```
+
+```{r}
+summary (Tfinal)
 ```
 
