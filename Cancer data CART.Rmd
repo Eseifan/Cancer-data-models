@@ -95,4 +95,8 @@ text (T11)
 ```{r}
 plotcp (Tr)
 ```
+```{r}
+Trb = rpart (mpg~., data = cars)
+summary (Trb)
+```
 
