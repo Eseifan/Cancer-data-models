@@ -113,6 +113,7 @@ error_Lasso = 1/length(Pred_Lasso)*sum ((Cancer_ts$target_deathrate-Pred_Lasso)^
 
 
 ```{r}
+#Compre error
 sqrt (error_tr)
 sqrt (error_AIC)
 sqrt (error_R2)
