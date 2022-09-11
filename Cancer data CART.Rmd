@@ -7,7 +7,18 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
 
+
 ```{r}
+install.packages("randomForest")
+install.packages("VSURF")
+
+
+```
+
+
+```{r}
+library (VSURF)
+library(randomForest)
 library (rpart)
 library("dplyr")
 library(MASS)
@@ -22,208 +33,87 @@ library(lubridate)
 
 
 ```{r}
-iris = (iris)
-iris
+#Load data and remove corrupt values
+Cancer <- read.csv('/Users/hazemeseifan/ASML/cancer_reg.csv')
+CancerC <-Cancer [!(Cancer$medianage > 100),]
+CancerC <-CancerC [!(CancerC$avganncount > 1962 & CancerC$avganncount < 1963),]
+Cancer2 = CancerC %>%
+  separate(geography, c("county", "state"), ", ")
+Cancer_m = Cancer2 [, -c( 9, 13, 18, 25)]
+
+Cancer_m = na.omit (Cancer_m)
+Cancer_m
+```
+
+
+
+```{r}
+set.seed(3101318)
+ M_VS_thres = VSURF_thres (x = Cancer_m [,-3], y = Cancer_m[,3], mtry = 3)
+
+```
+
+
+
+```{r}
+M_VS_interp <- VSURF_interp (x = Cancer_m [,-3], y = Cancer_m[,3], vars = M_VS_thres$varselect.thres)
+
 ```
 
 
 ```{r}
-Tc = rpart (Species ~., data = iris)
-Tc
+M_VS_interp$varselect.interp
+```
+```{r}
+Cancer_m
+
 ```
 
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+```{r}
+#Before we train our CART model, we'll split the set in train and test sets:
+u = 1:nrow (Cancer_m)
+m= floor (3/4*nrow (Cancer_m))
+v =sample (u,m)
+Cancer_tr = Cancer_m [v,]
+Cancer_ts = Cancer_m [-v,]
+Cancer_tr
+Cancer_ts
+```
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
 
 ```{r}
 #Construct maximal tree:
 
-Tc=rpart (Species~., data=iris, control = rpart.control (cp= 10^(-15), minsplit = 2))
-Tc
+Tmax=rpart (target_deathrate~
+              incidencerate + 
+              pctbachdeg25_over +
+              pcths25_over+
+              avgdeathsperyear+
+              medincome+
+              povertypercent+
+              pctpubliccoveragealone+
+              pctprivatecoverage+
+              pctblack+
+              pctotherrace+
+              pctemployed16_over+
+              pctpubliccoverage+
+              popest2015+
+              avganncount, 
+data=Cancer_tr, control = rpart.control (cp= 10^(-15), minsplit = 2))
+Tmax
 ```
-
-```{r}
-P= predict (Tc, type = 'class')
-V= iris$Species
-V
-```
-
-```{r}
-#Calculate the error:
-error = sum (V != P)
-error
-```
-
-```{r}
-
-#Maximal tree for cars dataset
-cars = (mtcars)
-
-
-cars
-Tr = rpart (mpg~., data = cars, control = rpart.control(minsplit = 2, cp = 10^(-15)))
-Tr
-```
-```{r}
-#calculate the error
-Vr=mtcars$mpg
-Pr=predict (Tr)
-err2=sum ( (Pr-Vr) ^2)
-err2
-```
-
-
-```{r}
-#alpha values
-Tr$cptable
-```
-
-```{r}
-#pruning:
-
-C= Tr$cptable
-T1=prune (Tr,cp=C[24,1])
-T2=prune (Tr,cp=C[23,1])
-T3=prune (Tr,cp=C[22,1])
-T4=prune (Tr,cp=C[21,1])
-T5=prune (Tr,cp=C[20,1])
-T10=prune (Tr,cp=C[15,1])
-T11=prune (Tr,cp=C[14,1])
-T12=prune (Tr,cp=C[13,1])
-plot (T10)
-text (T10)
-```
-
-```{r}
-plot (T11)
-text (T11)
-```
-```{r}
-plotcp (Tr)
-```
-```{r}
-Trb = rpart (mpg~., data = cars)
-summary (Trb)
-
-#Surrogate splits are used to place data points with missing values.
-```
-
-
-```{r}
-data ("airquality")
-A = airquality
-a=A$Ozone
-b=is.na(a)
-s=which (b=="TRUE" )
-
-B=A[-s,]
-V= A [s,]
-```
-
-```{r}
-summary (B)
-```
-
-```{r}
-TBmax = rpart (Ozone~., data = B, control = rpart.control(minsplit = 2, cp = 10^(-15)))
-TBmax
-```
-
-```{r}
-PBmax=predict (TBmax)
-err2=sum ( (PBmax-B$Ozone) ^2)
-err2
-```
-
-
-
-```{r}
-Cancer <- read.csv('/Users/hazemeseifan/ASML/cancer_reg.csv')
-summary (Cancer)
-n_distinct(Cancer$geography)
-
-```
-
-```{r}
-Cancer1 = Cancer %>%
-  separate(geography, c("county", "state"), ",")
-Cancer1
-```
-```{r}
-n_distinct(Cancer1$state)
-n_distinct(Cancer1$county)
-```
-
-
-```{r}
-Cancer1 [(Cancer1$medianage > 100),]
-Cancer2 <-Cancer1 [!(Cancer1$medianage > 100),]
-Cancer2
-```
-
-
-
-```{r}
-Cancer3 <-Cancer2 [!(Cancer2$avganncount > 1962 & Cancer2$avganncount < 1963),]
-Cancer3
-```
-
-
-
-
-```{r}
-summary (Cancer3) 
-
-```
-
-
-
-```{r}
-#Cancer4 = Cancer3 [, -c(13, 17, 24)]
-Cancer4 = Cancer3 [, -c(13, 18, 25)]
-
-Cancer4
-```
-```{r}
-
-u = 1:nrow (Cancer4)
-m= floor (2/3*nrow (Cancer4))
-v =sample (u,m)
-Cancer_m = Cancer4 [v,]
-Cancer_t = Cancer4 [-v,]
-```
-
-
-```{r}
-Cancer_m
-Cancer_t
-```
-
-
-
-```{r}
-Tmax = rpart (target_deathrate~., data = Cancer_m, control = rpart.control(minsplit = 2, cp = 10^(-200)))
-
-```
-
-
 ```{r}
 plotcp (Tmax)
 ```
 
-
-
-
-
 ```{r}
+#Check error for max tree
 Pmax=predict (Tmax)
-err2=sum ( (Pmax-Cancer_m$target_deathrate) ^2)/length(Pmax)
+err2=sum ( (Pmax-Cancer_tr$target_deathrate) ^2)/length (Pmax)
 err2
 ```
+
 
 ```{r}
 #Smallest cross-validation error:
@@ -247,29 +137,99 @@ Tfinal
 
 ```{r}
 plot (Tfinal)
+text (Tfinal)
+```
+
+```{r}
+M_AIC= lm (target_deathrate ~ avganncount + avgdeathsperyear + incidencerate + 
+    medincome + popest2015 + povertypercent + medianagemale + 
+    percentmarried + pctnohs18_24 + pcths18_24 + pcths25_over + 
+    pctbachdeg25_over + pctemployed16_over + pctprivatecoverage + 
+    pctempprivcoverage + pctwhite + pctasian + pctotherrace + 
+    pctmarriedhouseholds + birthrate, data = Cancer_tr)
+summary(M_AIC)
 ```
 
 
 ```{r}
-plotcp (Tmax)
-
+MR2 = lm (target_deathrate~
+avganncount+
+avgdeathsperyear+
+incidencerate+
+medincome+
+popest2015+
+povertypercent+
+medianagemale+
+percentmarried+
+pctnohs18_24+          
+pcths18_24+ 
+pcths25_over+
+pctbachdeg25_over+
+pctemployed16_over+
+pctprivatecoverage+
+pctempprivcoverage+    
+pctpubliccoverage+
+pctpubliccoveragealone+
+pctwhite+
+pctasian+
+pctotherrace+
+pctmarriedhouseholds+
+birthrate, 
+data = Cancer_tr)
+summary (MR2)
 ```
 
+```{r}
+M_Lasso = lm (target_deathrate ~  
+avganncount            +
+avgdeathsperyear       +
+incidencerate          +
+medincome              +
+povertypercent         +
+medianagemale          +
+medianagefemale        +
+percentmarried         +
+pctnohs18_24           +
+pcths18_24             +
+pcths25_over           +
+pctbachdeg25_over      +
+pctemployed16_over     +
+pctunemployed16_over   +
+pctprivatecoverage     +
+pctempprivcoverage     +
+pctpubliccoveragealone +
+pctwhite               +
+pctblack               +
+pctotherrace           +
+pctmarriedhouseholds   +
+birthrate              ,
+data= Cancer_tr)
 
+summary (M_Lasso)
+```
+
+```{r}
+Pred_tr = predict (Tfinal, newdata = Cancer_ts)
+Pred_AIC = predict (M_AIC, newdata = Cancer_ts)
+Pred_R2 = predict(MR2, newdata = Cancer_ts)
+Pred_Lasso  =  predict(Tfinal, newdata = Cancer_ts)
+```
 
 
 ```{r}
-Pfinal = predict (Tfinal, newdata = Cancer_t)
-```
+error_tr = 1/length(Pred_tr)*sum ((Cancer_ts$target_deathrate-Pred_tr)^2)
+error_AIC = 1/length(Pred_AIC)*sum ((Cancer_ts$target_deathrate-Pred_AIC)^2)
+error_R2 = 1/length(Pred_R2)*sum ((Cancer_ts$target_deathrate-Pred_R2)^2)
+error_Lasso = 1/length(Pred_Lasso)*sum ((Cancer_ts$target_deathrate-Pred_Lasso)^2)
 
+```
 
 
 ```{r}
-err_f = sqrt (sum ( (Pfinal-Cancer_t$target_deathrate) ^2)/length (Pfinal))
-err_f
+sqrt (error_tr)
+sqrt (error_AIC)
+sqrt (error_R2)
+sqrt (error_Lasso)
 ```
 
-```{r}
-summary (Tfinal)
-```
 

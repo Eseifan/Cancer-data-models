@@ -41,15 +41,20 @@ M6$beta
 #We git min (the lowest lambda), and the 1-standard error (1se)-rule lambda.  Nonezero is the number of non-zero coifficients
 ```
 
+```{r}
+best_lambda 
+
+```
 
 
 
 ```{r}
 
-M_final = lm (target_deathrate ~  
+M_Lasso = lm (target_deathrate ~  
 avganncount            +
 avgdeathsperyear       +
 incidencerate          +
+medincome              +
 povertypercent         +
 medianagemale          +
 medianagefemale        +
@@ -70,7 +75,7 @@ pctmarriedhouseholds   +
 birthrate              ,
 data= Cancer_m)
 
-summary (M_final)
+summary (M_Lasso)
 ```
 
 
