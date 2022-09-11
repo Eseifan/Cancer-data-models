@@ -45,6 +45,10 @@ Cancer_m = na.omit (Cancer_m)
 Cancer_m
 ```
 
+```{r}
+ set.seed(3101318)
+ M_VS = VSURF (x = Cancer_m [,-3], y = Cancer_m[,3], mtry = 10)
+```
 
 
 ```{r}
@@ -53,6 +57,7 @@ set.seed(3101318)
 
 ```
 
+`
 
 
 ```{r}
@@ -128,6 +133,11 @@ ZS = Z [1] #Pick the first one
 ZS
 
 ```
+
+```{r}
+CP
+```
+
 
 ```{r}
 #Use the CP value we picked to create a pruned tree
@@ -206,30 +216,6 @@ birthrate              ,
 data= Cancer_tr)
 
 summary (M_Lasso)
-```
-
-```{r}
-Pred_tr = predict (Tfinal, newdata = Cancer_ts)
-Pred_AIC = predict (M_AIC, newdata = Cancer_ts)
-Pred_R2 = predict(MR2, newdata = Cancer_ts)
-Pred_Lasso  =  predict(Tfinal, newdata = Cancer_ts)
-```
-
-
-```{r}
-error_tr = 1/length(Pred_tr)*sum ((Cancer_ts$target_deathrate-Pred_tr)^2)
-error_AIC = 1/length(Pred_AIC)*sum ((Cancer_ts$target_deathrate-Pred_AIC)^2)
-error_R2 = 1/length(Pred_R2)*sum ((Cancer_ts$target_deathrate-Pred_R2)^2)
-error_Lasso = 1/length(Pred_Lasso)*sum ((Cancer_ts$target_deathrate-Pred_Lasso)^2)
-
-```
-
-
-```{r}
-sqrt (error_tr)
-sqrt (error_AIC)
-sqrt (error_R2)
-sqrt (error_Lasso)
 ```
 
 
