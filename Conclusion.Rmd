@@ -99,7 +99,7 @@ summary (M_Lasso)
 Pred_tr = predict (Tfinal, newdata = Cancer_ts)
 Pred_AIC = predict (M_AIC, newdata = Cancer_ts)
 Pred_R2 = predict(MR2, newdata = Cancer_ts)
-Pred_Lasso  =  predict(Tfinal, newdata = Cancer_ts)
+Pred_Lasso  =  predict(M_Lasso, newdata = Cancer_ts)
 ```
 
 
