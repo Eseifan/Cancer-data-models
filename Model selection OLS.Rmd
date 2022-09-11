@@ -1,0 +1,144 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+
+library("dplyr")
+library(MASS)
+library ('glmnet')
+library(leaps)
+
+library (tidyr)
+library(tidyverse)
+
+library(lubridate)
+```
+
+
+
+
+
+
+
+
+
+```{r}
+#Building the full model: 
+M1 = lm (target_deathrate ~., data= Cancer_m)
+summary (M1)
+```
+
+```{r}
+plot (M1)
+```
+
+
+
+
+
+
+
+
+
+
+```{r}
+#Testing for Gaussianity of the noise:
+Rs = rstudent(M1)
+Rsc = rstudent(M1)
+Rst =rstandard(M1)
+plot (M1$fitted.values, Rs)
+ks.test (Rst, 'pnorm')
+ks.test (Rsc, 'pt', nrow (Cancer_m)-ncol(Cancer_m))
+#Noise is not gaussain
+```
+
+
+Noise is not Gaussian, we cannot use the Fisher criterion
+
+
+
+```{r}
+#Selecting variables 
+StepAIC_M = stepAIC (M1, direction = 'both')
+
+```
+
+
+
+```{r}
+M_AIC= lm (target_deathrate ~ avganncount + avgdeathsperyear + incidencerate + 
+    medincome + popest2015 + povertypercent + medianagemale + 
+    percentmarried + pctnohs18_24 + pcths18_24 + pcths25_over + 
+    pctbachdeg25_over + pctemployed16_over + pctprivatecoverage + 
+    pctempprivcoverage + pctwhite + pctasian + pctotherrace + 
+    pctmarriedhouseholds + birthrate, data = Cancer_m)
+summary (M_AIC)
+```
+
+
+
+
+
+```{r}
+plot (M3)
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+#Step selection by adjr2
+MR2 = leaps (Cancer_m [,-3], Cancer_m [,3], nbest=1, method = 'adjr2')
+MR2
+colnames(Cancer_m [,-3])
+```
+
+```{r}
+a = which (MR2$adjr2 == max (MR2$adjr2))
+a
+```
+
+```{r}
+plot (MR2$size, MR2$adjr2)
+```
+
+```{r}
+MR2 = lm (target_deathrate~
+avganncount+
+avgdeathsperyear+
+incidencerate+
+medincome+
+popest2015+
+povertypercent+
+medianagemale+
+percentmarried+
+pctnohs18_24+          
+pcths18_24+ 
+pcths25_over+
+pctbachdeg25_over+
+pctemployed16_over+
+pctprivatecoverage+
+pctempprivcoverage+    
+pctpubliccoverage+
+pctpubliccoveragealone+
+pctwhite+
+pctasian+
+pctotherrace+
+pctmarriedhouseholds+
+birthrate, 
+data = Cancer_m)
+summary (MR2)
+```

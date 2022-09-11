@@ -1,0 +1,120 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library (VSURF)
+library(randomForest)
+library (rpart)
+library("dplyr")
+library(MASS)
+library ('glmnet')
+library(leaps)
+
+library (tidyr)
+library(tidyverse)
+
+library(lubridate)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+```{r}
+M_AIC= lm (target_deathrate ~ avganncount + avgdeathsperyear + incidencerate + 
+    medincome + popest2015 + povertypercent + medianagemale + 
+    percentmarried + pctnohs18_24 + pcths18_24 + pcths25_over + 
+    pctbachdeg25_over + pctemployed16_over + pctprivatecoverage + 
+    pctempprivcoverage + pctwhite + pctasian + pctotherrace + 
+    pctmarriedhouseholds + birthrate, data = Cancer_tr)
+summary(M_AIC)
+```
+```{r}
+MR2 = lm (target_deathrate~
+avganncount+
+avgdeathsperyear+
+incidencerate+
+medincome+
+popest2015+
+povertypercent+
+medianagemale+
+percentmarried+
+pctnohs18_24+          
+pcths18_24+ 
+pcths25_over+
+pctbachdeg25_over+
+pctemployed16_over+
+pctprivatecoverage+
+pctempprivcoverage+    
+pctpubliccoverage+
+pctpubliccoveragealone+
+pctwhite+
+pctasian+
+pctotherrace+
+pctmarriedhouseholds+
+birthrate, 
+data = Cancer_tr)
+summary (MR2)
+
+```
+
+```{r}
+M_Lasso = lm (target_deathrate ~  
+avganncount            +
+avgdeathsperyear       +
+incidencerate          +
+medincome              +
+povertypercent         +
+medianagemale          +
+medianagefemale        +
+percentmarried         +
+pctnohs18_24           +
+pcths18_24             +
+pcths25_over           +
+pctbachdeg25_over      +
+pctemployed16_over     +
+pctunemployed16_over   +
+pctprivatecoverage     +
+pctempprivcoverage     +
+pctpubliccoveragealone +
+pctwhite               +
+pctblack               +
+pctotherrace           +
+pctmarriedhouseholds   +
+birthrate              ,
+data= Cancer_tr)
+
+summary (M_Lasso)
+```
+
+```{r}
+Pred_tr = predict (Tfinal, newdata = Cancer_ts)
+Pred_AIC = predict (M_AIC, newdata = Cancer_ts)
+Pred_R2 = predict(MR2, newdata = Cancer_ts)
+Pred_Lasso  =  predict(Tfinal, newdata = Cancer_ts)
+```
+
+
+```{r}
+error_tr = 1/length(Pred_tr)*sum ((Cancer_ts$target_deathrate-Pred_tr)^2)
+error_AIC = 1/length(Pred_AIC)*sum ((Cancer_ts$target_deathrate-Pred_AIC)^2)
+error_R2 = 1/length(Pred_R2)*sum ((Cancer_ts$target_deathrate-Pred_R2)^2)
+error_Lasso = 1/length(Pred_Lasso)*sum ((Cancer_ts$target_deathrate-Pred_Lasso)^2)
+
+```
+
+
+```{r}
+sqrt (error_tr)
+sqrt (error_AIC)
+sqrt (error_R2)
+sqrt (error_Lasso)
+```
